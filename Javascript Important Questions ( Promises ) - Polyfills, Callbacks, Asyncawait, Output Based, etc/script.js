@@ -681,6 +681,277 @@ console.log("Stop");
 // Hello to new friend Dhiraj
 // Hello to new friend 3 Krishna
 
+//Promises in Javascript
+//Question 1 - Whats the output
+
+console.log("start");
+
+const promise1 = new Promise((resolve, reject) => {
+    console.log(1);
+    resolve(2);
+});
+
+promise1.then((res) => {
+    console.log(res);
+});
+
+console.log("stop");
+start
+1
+stop
+2
+
+// QUestion 2 - whats output
+
+console.log("start");
+
+const promise1 = new Promise((resolve, reject) => {
+    console.log(1);
+    resolve(2);
+    console.log(3);
+});
+
+promise1.then((res) => {
+    console.log(res);
+});
+console.log("end");
+// start
+// 1
+// 3
+// stop
+// 2
+
+// Question 3 - what's the output
+
+console.log("start");
+
+const fn = () =>
+    new Promise((resolve, reject) => {
+        console.log(1);
+        resolve("success")
+    });
+
+console.log("middle");
+fn().then((res) => {
+    console.log(res);
+});
+
+console.log("end");
+//start
+//middle
+//1
+//stop
+//success
+
+//Question 4 - What's the output?
+
+function job() {
+    return new Promise(function (resolve, reject) {
+        reject();
+    });
+}
+
+let promise = job();
+
+promise.then(function () {
+    console.log("Success 1");
+})
+    .then(function () {
+        console.log("Success 2");
+    })
+    .then(function () {
+        console.log("Success 3");
+    })
+    .catch(function () {
+        console.log("Error 1");
+    })
+    .then(function () {
+        console.log("Success 4");
+    });
+//Error 1
+//Success 4
+
+//Question 5 - what is output
+function job(state) {
+    return new Promise(function (resolve, reject) {
+        if (state) {
+            resolve("succes");
+        } else {
+            reject("error");
+        }
+    });
+}
+
+let promise = job(true);
+
+promise
+    .then(function (data) {
+        console.log(data);
+
+        return job(false);
+    })
+    .catch(function (error) {
+        console.log(error);
+
+        return "Error caught";
+    })
+    .then(function (data) {
+        console.log(data);
+
+        return job(true);
+    })
+    .catch(function (error) {
+        console.log(error);
+
+    });
+//success 
+//error
+//Error Caught
+
+//Question 6 - whats output 
+
+function job(state) {
+    return new Promise(function (resolve, reject) {
+        if (state) {
+            resolve("succes");
+        } else {
+            reject("error");
+        }
+    });
+}
+
+let promise = job(true);  //resolve("Success")
+
+promise
+    .then(function (data) {
+        console.log(data);  //Success
+
+        return job(true);
+    })
+    .then(function (data) {
+        if (data !== "victory") {
+            throw "Defeat";
+        }
+        return job(true);
+    })
+    .then(function (data) {
+        console.log(data);
+    })
+    .catch(function (error) {
+        console.log(error);
+        return job(false);
+    })
+    .then(function (data) {
+        console.log(data);
+        return job(true);
+    })
+    .catch(function (error) {
+        console.log(error);
+        return "Error caught";
+    })
+    .then(function (data) {
+        console.log(data);
+        return new Error("test");
+    })
+    .then(function (data) {
+        console.log("Success", data.message);
+    })
+    .catch(function (data) {
+        console.log("Error", data.message);
+    });
+
+//Success
+//Defeat
+//error
+//Error caught
+//Success test
+
+//Question 7 - Promises Chainig
+
+const firstPromise = new Promise((resolve, reject) => {
+    resolve("First");
+});
+
+const secondPromise = new Promise((resolve, reject) => {
+    resolve("First");
+});
+
+secondPromise
+    .then((res) => {
+        return res;
+    })
+    .then((res) => console.log(res));
+//First
+
+//Question 8 - Rewrite this example code using async/await instead of '.then/catch'
+
+async function loadJson(url) {
+
+    let response = await fetch(url)
+
+    if (response.status == 200) {
+        let json = await response.json()
+        return json;
+    }
+    throw new Error(response.status);
+
+    // return fetch(url).then((response) => {
+    //     if (response.status == 200) {
+    //         return response.json();
+    //     } else {
+    //         throw new Error(response.status);
+    //     }
+    // });
+
+}
+
+loadJson("https://fakeurl.com/no-such-user.json").catch((error) => {
+    console.log(err);
+});
+
+//Question 9 - solve Promise Recursively
+
+function importantAction(username) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => resolve(`Important action done for ${username}`), 1000);
+    });
+}
+function likeTheVideo(video) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`Liked the video: ${video}`), 500);
+    });
+}
+function shareTheVideo(video) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`Shared the video: ${video}`), 700);
+    });
+}
+
+function promRecurse(funcPromises) {
+    if (funcPromises.length === 0) return;
+
+    const currPromise = funcPromises.shift();
+
+    currPromise
+        .then((res) => console.log(res))
+        .catch((err) => console.error(err));
+
+    promRecurse(funcPromises);
+}
+
+
+promRecurse(
+    [importantAction("coders"),
+    likeTheVideo("javascript Interview Quetion"),
+    shareTheVideo("JavaScript Interview Question")]
+);
+// javascript Interview Quetion
+// Shared the video: JavaScript Interview Question
+// Important action done for coders
+
+
+
+
 
 
 
