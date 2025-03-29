@@ -949,6 +949,129 @@ promRecurse(
 // Shared the video: JavaScript Interview Question
 // Important action done for coders
 
+//Question 10 - Promise Polyfill implementation
+
+function PromisePolyfill(executor) {
+    let onResolve, onReject, isReject = false, isFulfiled = false, isCalled = false, value;
+
+    function resolve(val) {
+        isFulfiled = true;
+        value = val;
+        onResolve(value)
+        if (typeof onResolve === 'function') {
+            onResolve(val);
+            isCalled = true;
+        }
+    }
+    function reject(val) {
+        isReject = true
+        value = val;
+        if (typeof onReject === 'function') {
+            onReject(val)
+            isCalled = true;
+
+        }
+
+
+    }
+
+    this.then = function (callback) {
+        onResolve = callback;
+        if (isFulfiled && !isCalled) {
+            called = true;
+            onResolve(value)
+        }
+
+        return this;
+    };
+
+    this.catch = function name(callback) {
+        onReject = callback;
+
+        if (isFulfiled && !isCalled) {
+            called = true;
+            onResolve(value)
+        }
+
+
+        return this;
+
+    };
+
+    try {
+        executor(resolve, reject);
+
+    } catch (error) {
+        reject(error)
+    }
+
+}
+
+const examplePromise = new PromisePolyfill((resolve, reject) => {
+    setTimeout(() => {
+        reject(2);
+    }, 1000);
+});
+
+examplePromise
+    .then((res) => {
+        console.log(res); 
+    })
+    .catch((err) => console.log(err));
+
+
+//Question 11 -  Promise.all() polyfill implementation
+
+function importantAction(username) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => resolve(`Important action done for ${username}`), 1000);
+    });
+}
+function likeTheVideo(video) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`Liked the video: ${video}`), 500);
+    });
+}
+function shareTheVideo(video) {
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(`Shared the video: ${video}`), 700);
+    });
+}
+
+Promise.allPolyfill = (promise) => {
+    return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
+            const result = []
+
+            if (!promise.length) {
+                resolve(results);
+                return;
+            }
+
+            const Pending = promise.length
+
+            promise.forEach((promise, idx) => {
+                Promise.resolve(promise).then((res => {
+                    results[idx] = res;
+                    Pending--;
+
+                    if (Pending === 0) {
+                        resolve(results);
+                    }
+                }))
+            })
+        })
+    });
+};
+
+Promise.all([
+   importantAction("coders"),
+   likeTheVideo("javascrit"),
+   shareTheVideo("js tutorials"),
+]).then((res)=> console.log(res));
+
+
+
 
 
 
