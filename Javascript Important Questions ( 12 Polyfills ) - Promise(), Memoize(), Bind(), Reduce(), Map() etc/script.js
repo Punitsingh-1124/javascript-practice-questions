@@ -254,3 +254,123 @@ Function.prototype.myBind = function (context = {}, ...args) {
 
 const newFunc = purchaseCar.myBind(car1);
 console.log(newFunc("₹", 5000000));
+
+//Closures in Javascript
+// - Once Polyfill
+// - Memoize Polyfill
+
+function once(func, context) {
+    let ran;
+    return function () {
+        if (func) {
+            ran = func.apply(context || this, arguments);
+            func = null;
+        };
+        return ran;
+    };
+}
+const hello = once((a, b) => console.log("hello", a, b));
+hello(1, 2)
+
+// - Memoize Polyfill
+
+function myMemoize(fn, context) {
+    const res = {};
+    return function (...args) {
+        var argsCache = JSON.stringify(args);
+        if (!res[argsCache]) {
+            res[argsCache] = fn.call(context || this, ...args);
+        }
+        return res[argsCache];
+
+    };
+}
+
+const clumsyProduct = (num1, num2) => {
+    for (let i = 1; i <= 1000000; i++) { }
+    return num1 * num2;
+}
+
+const memoizedClumzyProduct = myMemoize(clumsyProduct);
+
+console.time('First call');
+console.log(memoizedClumzyProduct(9467, 7649));
+console.timeEnd('First call');
+
+console.time('second call');
+console.log(memoizedClumzyProduct(9467, 7649));
+console.timeEnd('second call');
+
+//promises in javascript
+// polyfill for promises
+
+function PromisePolyFill(executor) {
+    let onResolve, onReject, isFulfilled = false, isCalled = false, isRejected = false, value;
+
+    function resolve(val) {
+        isFulfilled = true
+        value = val;
+        onResolve(value);
+
+        if (typeof onResolve === 'function') {
+            onResolve(val);
+            isCalled = true
+        }
+
+
+    }
+    function reject(val) {
+        isRejected = true
+        value = val;
+        if (typeof onReject === "function") {
+            onReject(val);
+            isCalled = true;
+        }
+    }
+
+
+    this.then = function (callback) {
+        onResolve = callback;
+
+        if (isFulfilled && !isCalled) {
+            isCalled = true
+            onResolve(value);
+        }
+
+
+        return this;
+    };
+    this.catch = function (callback) {
+        onReject = callback
+        if (isFulfilled && !isCalled) {
+            isCalled = true
+            onResolve(value);
+        }
+        return this;
+    };
+    try {
+
+        executor(resolve, reject)
+    } catch (error) {
+        reject(error);
+    }
+}
+
+const examplePromise = new PromisePolyFill((resolve, reject) => {
+    setTimeout(() => {
+        resolve(2);
+    }, 1000)
+});
+
+examplePromise
+    .then((res) => {
+        console.log(res);
+
+    }).catch((err) => {
+        console.error(err);
+
+    });
+
+
+
+
